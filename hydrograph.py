@@ -2,13 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import dates as mdates
 
-def hydrograph(flow_series, precip_series, ax=None, fig=None, figkwargs=None,
-               precip_resample='6H', precip_alpha=0.50):
+def hydrograph(flow_series, precip_series, ax=None, fig=None, fig_kwargs=None,
+               precip_resample='6H', precip_alpha=0.50, style='ggplot'):
 
     moving = flow_series.rolling('D').mean()
     precip_series = precip_series.resample(precip_resample).sum()
 
     # Create figure and axis if none is specified
+    plt.style.use(style)
     if fig_kwargs is None:
         fig_kwargs = dict(figsize=(11, 8.5))
     if fig is None:
@@ -33,7 +34,7 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, figkwargs=None,
             width = 1
         else:
             n = int(precip_resample[0])
-            width = 24*
+            width = n*24
     elif precip_resample[-1] == 'W':
         if precip_resample == 'W':
             width = 7
@@ -42,11 +43,13 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, figkwargs=None,
             width = n * 7
 
     # Plot precipitation
-    ax2.bar(precip_series['Precipitation'],
+    ax2.bar(precip_series.index,
+            precip_series['Precipitation'],
             width=width,
             alpha=precip_alpha,
             color='#5287A7')
-    ax2.bar(precip_series['Snow Melt'],
+    ax2.bar(precip_series.index,
+            precip_series['Snow Melt'],
             width=width,
             alpha=precip_alpha,
             color='#55A752')
@@ -58,8 +61,9 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, figkwargs=None,
     ax2.set_ylim(0, ax2.get_ylim()[1])
 
     # Set x-tick minor locator
-    ax.xaxis.set_minor_locator(mdates.Daylocator(interval=1))
+    ax.xaxis.set_minor_locator(mdates.DayLocator(interval=1))
     ax.grid(b=True, which='minor')
+    ax2.grid(b=False)
 
     # Color y-tick labels
     for ticklabel in ax.get_yticklabels():
@@ -71,4 +75,5 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, figkwargs=None,
     for tick in ax.get_xticklabels():
         tick.set_ha('right')
         tick.set_rotation(30)
-    
+
+    return fig, ax, ax2
