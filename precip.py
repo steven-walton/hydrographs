@@ -8,7 +8,8 @@ import io
 def get_precip(station, start_date, end_date):
     """
     Retrieves rainfall and snow melt data for a given station and date range.
-    Output is a pandas DataFrame with two columns: 'Precipitation' and 'Snow Melt'
+    Output is a pandas DataFrame with two columns:
+    'Precipitation' and 'Snow Melt'
     """
     dfp = get_rainfall_data(station, start_date, end_date, type='p')
     dfs = get_rainfall_data(station, start_date, end_date, type='s')
@@ -51,9 +52,10 @@ def get_rainfall_data(station, start_date, end_date, type='p'):
 def _rainfall_scrape(station, start_datetime, end_datetime, type='p'):
 
     # site url
-    url = 'http://www.nohrsc.noaa.gov/interactive/html/graph.html?station={station_id}&o=a&uc=0&by={start_year}' \
-      '&bm={start_month}&b{start_day}=1&bh={start_hour}&ey={end_year}&em={end_month}&ed={end_day}' \
-      '&eh={end_hour}&data={data_output}&units=0&region=us'
+    url = 'http://www.nohrsc.noaa.gov/interactive/html/graph.html?station=' \
+    '{station_id}&o=a&uc=0&by={start_year}&bm={start_month}&b{start_day}=1' \
+    '&bh={start_hour}&ey={end_year}&em={end_month}&ed={end_day}&eh={end_hour}' \
+    '&data={data_output}&units=0&region=us'
 
     # set data_ouput query
     if type == 'p':
@@ -64,12 +66,15 @@ def _rainfall_scrape(station, start_datetime, end_datetime, type='p'):
         data_output = 12
 
     # write and post request
-    full_url = url.format(station_id=station, start_year=start_datetime.year, end_year=end_datetime.year, start_month=start_datetime.month,
-                          end_month=end_datetime.month, start_day=start_datetime.day, end_day=end_datetime.day, start_hour=start_datetime.hour,
-                          end_hour=end_datetime.hour, data_output=data_output)
+    full_url = url.format(station_id=station, start_year=start_datetime.year,
+        end_year=end_datetime.year, start_month=start_datetime.month,
+        end_month=end_datetime.month, start_day=start_datetime.day,
+        end_day=end_datetime.day, start_hour=start_datetime.hour,
+        end_hour=end_datetime.hour, data_output=data_output)
 
-    response = requests.get(full_url, headers={'user-agent': 'mozilla/5.0 (windows nt 6.1) applewebkit/537.36 '
-                                                             '(khtml, like gecko) chrome/41.0.2228.0 safari/537.36'})
+    response = requests.get(full_url, headers={'user-agent':
+                             'mozilla/5.0 (windows nt 6.1) applewebkit/537.36 '
+                             '(khtml, like gecko) chrome/41.0.2228.0 safari/537.36'})
     # write response to dataframe
     data = response.text.replace('<br>', '')
     df = pd.read_csv(io.StringIO(data), index_col=0)
