@@ -12,7 +12,7 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, fig_kwargs=None,
     plt.style.use(style)
     if fig_kwargs is None:
         fig_kwargs = dict(figsize=(11, 8.5))
-    if fig is None:
+    if (fig is None) and (ax is None):
         fig = plt.figure(**fig_kwargs)
     if ax is None:
         ax = fig.add_subplot(1, 1, 1)
@@ -77,3 +77,21 @@ def hydrograph(flow_series, precip_series, ax=None, fig=None, fig_kwargs=None,
         tick.set_rotation(30)
 
     return fig, ax, ax2
+
+def hydrographs(dfs, precip, titles, precip_resample='6H', style='ggplot'):
+    fig, axs = plt.subplots(len(dfs), 1, figsize=(17,11), sharex=True)
+    axs2 = []
+    if type(dfs) is list:
+        for ax, df, title in zip(axs, dfs, titles):
+            f, ax, ax2 = hydrograph(df, precip, precip_resample=precip_resample,
+                       style=style, ax=ax)
+            ax.set_title(title)
+            axs2.append(ax2)
+    elif type(dfs) is pandas.core.frame.DataFrame:
+        for ax, df, title in zip(axs, dfs, titles):
+                    f, ax, ax2 = hydrograph(dfs[df], precip, precip_resample=precip_resample,
+                               style=style, ax=ax)
+                    ax.set_title(title)
+                    axs2.append(ax2)
+
+    return fig, axs, axs2
