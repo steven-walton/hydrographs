@@ -3,6 +3,7 @@ import precip
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import storm_frequency as sf
 
 # Path to test data
 script_dir = os.path.dirname(__file__)
@@ -25,3 +26,15 @@ df4 = df*1.25
 dfs = [df, df2, df3, df4]
 fig, ax, ax2 = hydrograph.hydrographs(dfs, pdf, titles=['df', 'df2', 'df3', 'df4'])
 plt.show()
+
+# Test storm frequency
+script_dir = os.path.dirname(__file__)
+rel_path = "testdata/test_PDS.csv"
+data_path = os.path.join(script_dir, rel_path)
+duration = 1440
+magnitude = 3.31
+
+x1, x2s, ys = sf.load_PDS(data_path)
+a, b = sf.fit_PDS(x2s, ys)
+r = sf.recurrence_PDF(x1, a, b, duration, magnitude)
+print(r)
