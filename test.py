@@ -28,12 +28,12 @@ import storm_freq_model as sfm
 # fig, ax, ax2 = hydrograph.hydrographs(dfs, pdf, titles=['df', 'df2', 'df3', 'df4'])
 # plt.show()
 #
-# # Test storm frequency
+# Test storm frequency
 # script_dir = os.path.dirname(__file__)
-# rel_path = "testdata/test_PDS.csv"
+# rel_path = "testdata/test_PDS2.csv"
 # data_path = os.path.join(script_dir, rel_path)
-# duration = 1440
-# magnitude = 3.31
+# duration = 1320
+# magnitude = 2.57
 #
 # x1, x2s, ys = sf.load_PDS(data_path)
 # a, b = sf.fit_PDS(x2s, ys)
@@ -42,5 +42,5 @@ import storm_freq_model as sfm
 
 # Test storm frequency model
 model = sfm.Storm_freq_model(40.0347, -105.0882)
-rs = model.calc_recurrence(5.43, 5760)
+rs = model.calc_recurrence(1.52, 60)
 print(rs)

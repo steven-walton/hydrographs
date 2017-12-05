@@ -19,8 +19,13 @@ class Storm_freq_model():
             x1 = model[0]
             a = model[1]
             b = model[2]
-            r[entry] = recurrence_PDF(x1, a, b, duration, magnitude)
+            r[entry] = recurrence_PDF(x1, a, b, magnitude, duration)
+            print(f'{entry}, a: {a}, b: {b}')
         return r
+
+    def plot_recurrence(self, magnitude, duration):
+        r = self.calc_recurrence(magnitude, duration)
+
 
 def model_setup(pds_type, lat, lon):
     df = get_PDS(pds_type, lat, lon)
@@ -42,7 +47,7 @@ def get_PDS(pds_type, lat, lon):
     return df
 
 def clean_PDS(df):
-    df.drop(['200', '500', '1000'], axis=1, inplace=True)
+    df.drop(['100', '200', '500', '1000'], axis=1, inplace=True)
     df = df.stack().reset_index()
     df.columns = ['duration', 'interval', 'rainfall']
 
@@ -74,7 +79,7 @@ def list_neighbors(ival, vals):
     for val in vals:
         if val < ival:
             lowers.append(val)
-        elif val < ival:
+        elif val > ival:
             uppers.append(val)
         elif val == val:
             is_equal = True
@@ -95,7 +100,7 @@ def fit_PDS(x2s, ys):
     b = popts[:, 1]
     return a, b
 
-def recurrence_PDF(x1, a, b, duration, magnitude):
+def recurrence_PDF(x1, a, b, magnitude, duration):
     xlower, xupper = list_neighbors(duration, x1)
     ilower = np.where(x1 == xlower)
     iupper = np.where(x1 == xupper)
@@ -107,3 +112,12 @@ def recurrence_PDF(x1, a, b, duration, magnitude):
         weight = 0
     r = rlower * weight + rupper * (1 - weight)
     return r
+
+
+def main():
+    model = Storm_freq_model(40.0347, -105.0882)
+    rec = model.calc_recurrence(2.57, 22*60)
+    print(rec)
+
+if __name__ == '__main__':
+    main()
